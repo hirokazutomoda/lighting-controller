@@ -1,5 +1,8 @@
 #include <iostream>
 #include <cstdlib>
+#include <csignal>
+#include <chrono>
+#include <thread>
 #include <rtmidi/RtMidi.h>
 
 bool done;
@@ -54,7 +57,7 @@ int main() {
                         ccMessage.push_back(ccValue);
                         midiout->sendMessage(&ccMessage);
                         ccValue += 5; // Increment the CC value
-                        usleep(50000); // 50ms delay between CC messages
+                        std::this_thread::sleep_for(std::chrono::milliseconds(50)); // 50ms delay between CC messages
                     }
                     triggerCount++;
                 }
@@ -67,7 +70,7 @@ int main() {
         }
 
         // Sleep for 10ms before the next loop iteration
-        usleep(10000);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     delete midiin;

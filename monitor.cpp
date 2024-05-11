@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <rtmidi/RtMidi.h>
 
 bool chooseMidiPort(RtMidi *rtmidi) {

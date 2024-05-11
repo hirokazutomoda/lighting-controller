@@ -2,7 +2,10 @@
 CXX=g++
 
 # Compiler flags
-CXXFLAGS=-Wall -lrtmidi -lpthread -std=c++11
+CXXFLAGS=-Wall -std=c++11
+
+# Linker flags
+LDFLAGS=-lrtmidi -lpthread -Wl,-rpath,'./rtmidi/build'
 
 # Define source files
 SRC1=controller.cpp
@@ -13,15 +16,15 @@ TARGET1=controller
 TARGET2=monitor
 
 # Default target
-all: $(TARGET1) $(TARGET2)
+all: clean $(TARGET1) $(TARGET2)
 
 # Rule to link the main program
 $(TARGET1): $(SRC1)
-	$(CXX) $(SRC1) -o $(TARGET1) $(CXXFLAGS)
+	$(CXX) $(SRC1) -o $(TARGET1) $(CXXFLAGS) $(LDFLAGS)
 
 # Rule to link the monitor program
 $(TARGET2): $(SRC2)
-	$(CXX) $(SRC2) -o $(TARGET2) $(CXXFLAGS)
+	$(CXX) $(SRC2) -o $(TARGET2) $(CXXFLAGS) $(LDFLAGS)
 
 # Rule to clean old builds
 clean:
