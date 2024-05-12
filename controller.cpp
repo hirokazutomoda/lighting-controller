@@ -1,109 +1,113 @@
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <csignal>
 #include <chrono>
 #include <thread>
-#include <map>
 #include <vector>
-
+#include <iomanip>
 #include <rtmidi/RtMidi.h>
 
 bool done = false;
 const std::string MIDI_PORT_NAME = "UM-ONE";
-static void finish(int sig) { done = true; }
+std::ofstream logFile("midi_log.txt", std::ios::out | std::ios::app);
 
-int findPortByName(RtMidiIn *midiin, const std::string &portName)
-{
-    unsigned int nPorts = midiin->getPortCount();
-    for (unsigned int i = 0; i < nPorts; ++i)
-    {
-        // std::cout << midiin->getPortName(i) << std::endl;
-        if (midiin->getPortName(i).find(portName) != std::string::npos)
-        {
+static void finish(int sig) {
+    done = true;
+    logFile.close();
+}
+
+void sendCC(RtMidiOut* midiout, unsigned char channel, unsigned char ccNumber, unsigned char value) {
+    std::vector<unsigned char> message = {static_cast<unsigned char>(0xB0 + channel), ccNumber, value};
+    midiout->sendMessage(&message);
+    std::cout << "Sending CC: ";
+    logFile << "Sending CC: ";
+    for (auto byte : message) {
+        std::cout << std::hex << +byte << " ";
+        logFile << std::hex << +byte << " ";
+    }
+    std::cout << std::dec << std::endl;
+    logFile << std::dec << std::endl;
+}
+
+void handleNote60FadeIn(RtMidiOut* midiout) {
+    for (int i = 0; i <= 127; i += 5) {
+        sendCC(midiout, 0, 7, i);  // Channel 1, CC#7 (Volume), Increasing Value
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+}
+
+void handleNote61FadeOut(RtMidiOut* midiout) {
+    for (int i = 127; i >= 0; i -= 5) {
+        sendCC(midiout, 0, 7, i);  // Channel 1, CC#7 (Volume), Decreasing Value
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+}
+
+int findPortByName(RtMidi* midi, const std::string& portName) {
+    unsigned int nPorts = midi->getPortCount();
+    for (unsigned int i = 0; i < nPorts; ++i) {
+        if (midi->getPortName(i).find(portName) != std::string::npos) {
             return i;
         }
     }
     return -1;
 }
 
-void waitForDevice(RtMidiIn *midiin, const std::string &portName)
-{
+void waitForDevice(RtMidi* midi, const std::string& portName) {
     int portNumber = -1;
-    while ((portNumber = findPortByName(midiin, portName)) == -1)
-    {
+    while ((portNumber = findPortByName(midi, portName)) == -1) {
         std::cout << "Waiting for '" << portName << "' to connect..." << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        logFile << "Waiting for '" << portName << "' to connect..." << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(5)); // Check every 5 seconds
     }
-    midiin->openPort(portNumber);
+    midi->openPort(portNumber);
     std::cout << "'" << portName << "' connected." << std::endl;
+    logFile << "'" << portName << "' connected." << std::endl;
 }
 
-int main()
-{
-    RtMidiIn *midiin = nullptr;
-    RtMidiOut *midiout = nullptr;
-    int noteNumber = 60; // MIDI note number to trigger fade-in
-    int ccValue = 0;     // Starting value for CC
-    int triggerCount = 0; // Number of times the trigger note has been caught
-    bool passThrough = true; // Configure if input should be passed through
+int main() {
+    RtMidiIn* midiin = nullptr;
+    RtMidiOut* midiout = nullptr;
 
-    try
-    {
+    try {
         midiin = new RtMidiIn();
         midiout = new RtMidiOut();
-    }
-    catch (RtMidiError &error)
-    {
+    } catch (RtMidiError &error) {
         error.printMessage();
         exit(EXIT_FAILURE);
     }
 
     std::signal(SIGINT, finish);
-    waitForDevice(midiin, MIDI_PORT_NAME);
 
-    midiout->openVirtualPort("Controller Output"); // Open a virtual port
-    
-    midiin->ignoreTypes(false, false, false); // Don't ignore any messages
+    waitForDevice(midiin, MIDI_PORT_NAME);  // Open UM-ONE port for input
+    waitForDevice(midiout, MIDI_PORT_NAME); // Open UM-ONE port for output
 
-    // Main loop
-    while (!done)
-    {
+    midiin->ignoreTypes(false, false, false);
+
+    while (!done) {
         std::vector<unsigned char> message;
         midiin->getMessage(&message);
         int nBytes = message.size();
-        if (nBytes > 0)
-        {
-            // Example to process received messages
-            // Process more complex pattern matching and output generation here
+        if (nBytes > 0) {
             std::cout << "Received MIDI data: ";
-            for (int i = 0; i < nBytes; ++i)
-            {
-                std::cout << static_cast<int>(message[i]) << " ";
+            logFile << "Received MIDI data: ";
+            for (int i = 0; i < nBytes; ++i) {
+                std::cout << std::hex << +message[i] << " ";
+                logFile << std::hex << +message[i] << " ";
             }
-            std::cout << std::endl;
-                        if (message[0] == 0x90 && message[1] == noteNumber && message[2] > 0) { // Note On
-                if (triggerCount == 0) {
-                    // Start sending CC messages for fade-in
-                    while (ccValue <= 127) {
-                        std::vector<unsigned char> ccMessage;
-                        ccMessage.push_back(0xB0); // CC on channel 1
-                        ccMessage.push_back(7);    // Volume CC number
-                        ccMessage.push_back(ccValue);
-                        midiout->sendMessage(&ccMessage);
-                        ccValue += 5; // Increment the CC value
-                        std::this_thread::sleep_for(std::chrono::milliseconds(50)); // 50ms delay between CC messages
-                    }
-                    triggerCount++;
+            std::cout << std::dec << std::endl;
+            logFile << std::dec << std::endl;
+
+            if (message[0] == 0x90) {  // Note On
+                if (message[1] == 60) {
+                    handleNote60FadeIn(midiout);
+                } else if (message[1] == 61) {
+                    handleNote61FadeOut(midiout);
                 }
             }
-
-            // Optionally pass through the original message
-            if (passThrough) {
-                midiout->sendMessage(&message);
-            }
         }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Sleep to reduce CPU usage
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     delete midiin;
