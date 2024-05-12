@@ -1,0 +1,158 @@
+#include <thread>
+#include "MidiHandler.h"
+
+const unsigned char CH_LIGHT = 15;
+
+const unsigned char CC_H2O_DIMMER = 16;
+const unsigned char CC_H2O_ROTATION = 17;
+const unsigned char CC_H2O_COLOR = 18;
+
+const unsigned char VAL_H2O_COLOR_WHITE = 0;
+const unsigned char VAL_H2O_COLOR_ORANGE = 15;
+const unsigned char VAL_H2O_COLOR_PURPLE = 60;
+const unsigned char VAL_H2O_COLOR_PURPLE_WHITE = 61;
+
+void sendCC(RtMidiOut *midiout, unsigned char channel, unsigned char ccNumber, unsigned char value)
+{
+    std::vector<unsigned char> message = {static_cast<unsigned char>(0xB0 + channel), ccNumber, value};
+    midiout->sendMessage(&message);
+    std::cout << "Sending CC: ";
+    for (auto byte : message)
+    {
+        std::cout << std::hex << +byte << " ";
+    }
+    std::cout << std::dec << std::endl;
+}
+
+void fadeIn(RtMidiOut *midiout)
+{
+    for (int i = 0; i <= 127; i += 5)
+    {
+        sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, i);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+}
+
+void fadeOut(RtMidiOut *midiout)
+{
+    for (int i = 127; i >= 0; i -= 5)
+    {
+        sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, i);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+}
+
+void eFadeOut(RtMidiOut *midiout)
+{
+    int wait = 5000;
+    for (int i = 125; i >= 0; i--)
+    {
+        sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, i);
+        wait = wait * 1.1;
+        std::cout << "Waiting for " << wait << "ns" << std::endl;
+        std::this_thread::sleep_for(std::chrono::nanoseconds(wait));
+    }
+}
+
+void handleLullaby(RtMidiOut *midiout)
+{
+    // only setup colour, no light
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 0);
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 40);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_ORANGE);
+}
+
+void handleDeathMarch(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 40);
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 40);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_ORANGE);
+}
+
+void handleDeathMarchEnd(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_PURPLE_WHITE);
+}
+
+void handleSpiralCogwheel(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 60);
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 55);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_PURPLE);
+}
+
+void handleSpiralCogwheelBreak(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 5);
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 60);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_WHITE);
+}
+
+void handleSpiralCogwheelHit(RtMidiOut *midiout)
+{
+
+    for (int i = 60; i >= 0; i -= 1)
+    {
+        sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, i);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 0);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_WHITE);
+}
+
+void handleInfiniteCorridorKick(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 0);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_WHITE);
+
+    for (int i = 10; i >= 0; i -= 1)
+    {
+        sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, i);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void handleInfiniteCorridorSnare(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 0);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_WHITE);
+
+    for (int i = 125; i >= 20; i -= 5)
+    {
+        sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, i);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+    for (int i = 20; i >= 0; i -= 1)
+    {
+        sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, i);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void handleForcedLabourSong(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 30);
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 10);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_PURPLE_WHITE);
+}
+
+void handleForcedLabourSongG(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 30);
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 10);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_ORANGE);
+}
+
+void handleSpirograph(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 10);
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 60);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_WHITE);
+}
+
+void handle00000000(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 0);
+    sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 0);
+    sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, 0);
+}

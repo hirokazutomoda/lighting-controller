@@ -5,32 +5,37 @@ CXX=g++
 CXXFLAGS=-Wall -std=c++11
 
 # Linker flags
-LDFLAGS=-lrtmidi -lpthread -Wl,-rpath,'./rtmidi/build'
+LDFLAGS=-lrtmidi -lpthread -Wl,-rpath,'/usr/local/lib',-rpath,'./rtmidi/build'
 
-# Define source files
-SRC1=controller.cpp
-SRC2=monitor.cpp
+# source files
+SOURCES=MidiConverter.cpp MidiHandler.cpp main.cpp
 
-# Define the executables output
-TARGET1=controller
-TARGET2=monitor
+# executables
+TARGET=lighting-controller
+
+OBJECTS=$(SOURCES:.cpp=.o)
 
 # Default target
-all: clean $(TARGET1) $(TARGET2)
+all: clean $(TARGET)
 
-# Rule to link the main program
-$(TARGET1): $(SRC1)
-	$(CXX) $(SRC1) -o $(TARGET1) $(CXXFLAGS) $(LDFLAGS)
+# compile the main program
+$(TARGET): $(OBJECTS)
+	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
 
-# Rule to link the monitor program
-$(TARGET2): $(SRC2)
-	$(CXX) $(SRC2) -o $(TARGET2) $(CXXFLAGS) $(LDFLAGS)
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Rule to clean old builds
 clean:
-	rm -f $(TARGET1) $(TARGET2)
+	rm -f $(TARGET) $(OBJECTS)
 
 # Rule to install RtMidi (run this if RtMidi is not installed)
 install-rtmidi:
 	git clone https://github.com/thestk/rtmidi
 	cd rtmidi && mkdir build && cd build && cmake .. && make && sudo make install
+
+install-service:
+	cp $(TARGET) /usr/local/bin
+	cp controller.service /etc/systemd/system/lighting-controller.service
+	systemctl daemon-reload
+	systemctl enable lighting-controller.service
+	systemctl start lighting-controller.service
