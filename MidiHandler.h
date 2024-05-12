@@ -11,5 +11,7 @@ void handleInfiniteCorridorKick(RtMidiOut *midiout);
 void handleInfiniteCorridorSnare(RtMidiOut *midiout);
 void handleForcedLabourSong(RtMidiOut *midiout);
 void handleForcedLabourSongG(RtMidiOut *midiout);
+void handleForcedLabourSongGKick(RtMidiOut *midiout);
 void handleSpirograph(RtMidiOut *midiout);
 void handle00000000(RtMidiOut *midiout);
+void handleFin(RtMidiOut *midiout);

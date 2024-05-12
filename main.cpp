@@ -21,9 +21,11 @@ int main()
     mc.registerHandler(73, TRIGGER_KICK, handleInfiniteCorridorKick);
     mc.registerHandler(73, TRIGGER_SNARE_RIM, handleInfiniteCorridorSnare);
     mc.registerHandler(74, TRIGGER_KICK, handleForcedLabourSong);
-    mc.registerHandler(74, TRIGGER_FOOT_PEDAL, handleForcedLabourSongG);
+    mc.registerHandler(76, TRIGGER_FOOT_PEDAL, handleForcedLabourSongG);
+    mc.registerHandler(76, TRIGGER_KICK, handleForcedLabourSongGKick);
     mc.registerHandler(77, TRIGGER_KICK, handleSpirograph);
     mc.registerHandler(78, TRIGGER_KICK, handle00000000);
+    mc.registerHandler(78, TRIGGER_FOOT_PEDAL, handleFin);
 
     mc.run();
     return 0;
