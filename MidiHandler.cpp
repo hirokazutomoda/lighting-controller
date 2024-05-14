@@ -92,9 +92,15 @@ void handleDeathMarchEnd(RtMidiOut *midiout)
     // sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_ORANGE_GREEN);
 }
 
+unsigned char spiralCogwheelDimmer = 60;
 void handleSpiralCogwheel(RtMidiOut *midiout)
 {
-    sendCC(midiout, CH_LIGHT, CC_ALKALITE_RED, 127);
+    spiralCogwheelDimmer = spiralCogwheelDimmer + 3;
+    if (spiralCogwheelDimmer > 127)
+    {
+        spiralCogwheelDimmer = 127;
+    }
+    sendCC(midiout, CH_LIGHT, CC_ALKALITE_RED, spiralCogwheelDimmer);
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_GREEN, 0);
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_BLUE, 0);
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_DIMMER, 30);
@@ -106,6 +112,8 @@ void handleSpiralCogwheel(RtMidiOut *midiout)
 
 void handleSpiralCogwheelBreak(RtMidiOut *midiout)
 {
+    spiralCogwheelDimmer = 60;
+    
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_RED, 0);
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_GREEN, 0);
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_BLUE, 0);

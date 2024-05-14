@@ -34,6 +34,7 @@ install-rtmidi:
 	cd rtmidi && mkdir build && cd build && cmake .. && make && sudo make install
 
 install-service:
+	systemctl stop lighting-controller.service
 	cp $(TARGET) /usr/local/bin
 	cp controller.service /etc/systemd/system/lighting-controller.service
 	systemctl daemon-reload
