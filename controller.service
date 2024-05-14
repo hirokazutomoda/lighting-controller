@@ -1,11 +1,11 @@
 [Unit]
-Description=Controller Service
+Description=Lighting Controller Service
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/controller
-StandardOutput=append:/home/pi/controller.log
+ExecStart=/usr/local/bin/lighting-controller
+StandardOutput=append:/home/pi/lighting-controller.log
 StandardError=inherit
 Restart=always
 RestartSec=3
