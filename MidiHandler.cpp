@@ -77,7 +77,7 @@ void handleLullaby(RtMidiOut *midiout)
 
 void handleDeathMarch(RtMidiOut *midiout)
 {
-    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 40);
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 80);
     sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 40);
     sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_ORANGE);
 
@@ -95,7 +95,7 @@ void handleDeathMarchEnd(RtMidiOut *midiout)
 unsigned char spiralCogwheelDimmer = 60;
 void handleSpiralCogwheel(RtMidiOut *midiout)
 {
-    spiralCogwheelDimmer = spiralCogwheelDimmer + 3;
+    spiralCogwheelDimmer = spiralCogwheelDimmer + 5;
     if (spiralCogwheelDimmer > 127)
     {
         spiralCogwheelDimmer = 127;
@@ -113,7 +113,7 @@ void handleSpiralCogwheel(RtMidiOut *midiout)
 void handleSpiralCogwheelBreak(RtMidiOut *midiout)
 {
     spiralCogwheelDimmer = 60;
-    
+
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_RED, 0);
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_GREEN, 0);
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_BLUE, 0);
@@ -127,7 +127,7 @@ void handleSpiralCogwheelBreak(RtMidiOut *midiout)
 void handleSpiralCogwheelHit(RtMidiOut *midiout)
 {
 
-    for (int i = 60; i >= 0; i -= 1)
+    for (int i = 120; i >= 0; i -= 2)
     {
         sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, i);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -156,12 +156,12 @@ void handleInfiniteCorridorSnare(RtMidiOut *midiout)
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_GREEN, 0);
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_BLUE, 0);
 
-    for (int i = 78; i >= 20; i -= 2)
+    for (int i = 119; i >= 20; i -= 3)
     {
         sendCC(midiout, CH_LIGHT, CC_ALKALITE_DIMMER, i);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
-    for (int i = 20; i >= 0; i -= 1)
+    for (int i = 40; i >= 0; i -= 2)
     {
         sendCC(midiout, CH_LIGHT, CC_ALKALITE_DIMMER, i);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -170,7 +170,7 @@ void handleInfiniteCorridorSnare(RtMidiOut *midiout)
 
 void handleForcedLabourSong(RtMidiOut *midiout)
 {
-    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 10);
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 30);
     sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 10);
     sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_PURPLE_WHITE);
 }
@@ -188,7 +188,7 @@ void handleForcedLabourSongGKick(RtMidiOut *midiout)
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_BLUE, 0);
 
     sendCC(midiout, CH_LIGHT, CC_ALKALITE_DIMMER, 10);
-    for (int i = 20; i >= 6; i -= 2)
+    for (int i = 48; i >= 6; i -= 6)
     {
         sendCC(midiout, CH_LIGHT, CC_ALKALITE_RED, i);
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -197,13 +197,19 @@ void handleForcedLabourSongGKick(RtMidiOut *midiout)
 
 void handleSpirograph(RtMidiOut *midiout)
 {
-    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 5);
+    sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 30);
     sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 60);
     sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, VAL_H2O_COLOR_WHITE);
 }
 
+int counter = 0;
 void handle00000000(RtMidiOut *midiout)
 {
+    if (counter <= 16)
+    {
+        counter++;
+        return;
+    }
     sendCC(midiout, CH_LIGHT, CC_H2O_DIMMER, 0);
     sendCC(midiout, CH_LIGHT, CC_H2O_ROTATION, 0);
     sendCC(midiout, CH_LIGHT, CC_H2O_COLOR, 0);
@@ -220,6 +226,6 @@ void handleFin(RtMidiOut *midiout)
     for (int i = 40; i >= 0; i -= 5)
     {
         sendCC(midiout, CH_LIGHT, CC_ALKALITE_DIMMER, i);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(30));
     }
 }

@@ -33,7 +33,7 @@ void waitForDevice(RtMidi *midi, const std::string &portName)
     int portNumber = -1;
     while ((portNumber = findPortByName(midi, portName)) == -1)
     {
-        std::cout << "Waiting for '" << portName << "' to connect..." << std::endl;
+        // std::cout << "Waiting for '" << portName << "' to connect..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(5)); // Check every 5 seconds
     }
     midi->openPort(portNumber);
@@ -83,7 +83,7 @@ void MidiConverter::run()
                           << " to program number " << programNumber << std::endl;
             }
 
-            std::cout << "status: " << std::hex << +status << std::endl;
+            // std::cout << "status: " << std::hex << +status << std::endl;
             // note on
             // todo: consider channels
             if (message[0] == 0x99)
