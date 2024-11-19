@@ -355,3 +355,33 @@ void handleHollow(RtMidiOut *midiout)
     sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_WHITE, 0);
     sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_DIMMER, 80);
 }
+
+void handleBlack(RtMidiOut *midiout)
+{
+    reset(midiout);
+}
+
+
+void handleWhite(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_PROGRAM_DIMMER_CURVE, VAL_MEGA_HEX_PAR_CURVE_STANDARD);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_RED, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_GREEN, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_BLUE, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_AMBER, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_UV, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_WHITE, 127);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_DIMMER, 30);
+}
+
+void handleSludge(RtMidiOut *midiout)
+{
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_PROGRAM_DIMMER_CURVE, VAL_MEGA_HEX_PAR_CURVE_STANDARD);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_RED, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_GREEN, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_BLUE, 127);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_AMBER, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_UV, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_WHITE, 0);
+    sendCC(midiout, CH_LIGHT, CC_MEGA_HEX_PAR_DIMMER, 50);
+}

@@ -15,6 +15,8 @@ int main()
     mc.openPort("UM-ONE");
 
     mc.registerHandler(0, TRIGGER_FOOT_PEDAL, reset);
+    mc.registerHandler(0, TRIGGER_KICK, reset);
+
     mc.registerHandler(67, TRIGGER_FOOT_PEDAL, handleLullaby);
     // mc.registerHandler(0, 60, handleDawn);
     mc.registerHandler(68, TRIGGER_KICK, handleDeathMarch);
@@ -23,7 +25,7 @@ int main()
     mc.registerHandler(72, TRIGGER_FOOT_PEDAL, handleSpiralCogwheelBreak);
     mc.registerHandler(72, TRIGGER_KICK, handleSpiralCogwheelHit);
     mc.registerHandler(73, TRIGGER_KICK, handleInfiniteCorridorKick);
-    mc.registerHandler(73, TRIGGER_SNARE_RIM, handleInfiniteCorridorSnare);
+    mc.registerHandler(73, TRIGGER_SNARE, handleInfiniteCorridorSnare);
     mc.registerHandler(74, TRIGGER_KICK, handleForcedLabourSong);
     mc.registerHandler(76, TRIGGER_FOOT_PEDAL, handleForcedLabourSongG);
     mc.registerHandler(76, TRIGGER_KICK, handleForcedLabourSongGKick);
@@ -34,11 +36,17 @@ int main()
 
     mc.registerHandler(86, TRIGGER_KICK, handleStigma);
     mc.registerHandler(94, TRIGGER_FOOT_PEDAL, handleManago);
-    mc.registerHandler(87, TRIGGER_SNARE_RIM, handleCradle);
+    mc.registerHandler(87, TRIGGER_SNARE, handleCradle);
     mc.registerHandler(88, TRIGGER_KICK, handleCradleChorus);
     mc.registerHandler(95, TRIGGER_FOOT_PEDAL, handleUnkown);
     mc.registerHandler(91, TRIGGER_FLOOR_TOM, handleHollowOne);
     mc.registerHandler(91, TRIGGER_KICK, handleHollow);
+
+    mc.registerHandler(84, TRIGGER_FOOT_PEDAL, handleBlack);
+    mc.registerHandler(83, TRIGGER_FOOT_PEDAL, handleBlack);
+    mc.registerHandler(60, TRIGGER_FOOT_PEDAL, handleWhite);
+
+
 
 
     mc.run();

@@ -25,3 +25,6 @@ void handleCradleChorus(RtMidiOut *midiout);
 void handleUnkown(RtMidiOut *midiout);
 void handleHollowOne(RtMidiOut *midiout);
 void handleHollow(RtMidiOut *midiout);
+
+void handleBlack(RtMidiOut *midiout);
+void handleWhite(RtMidiOut *midiout);
