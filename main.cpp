@@ -14,6 +14,7 @@ int main()
     MidiConverter mc;
     mc.openPort("UM-ONE");
 
+    mc.registerHandler(0, TRIGGER_FOOT_PEDAL, reset);
     mc.registerHandler(67, TRIGGER_FOOT_PEDAL, handleLullaby);
     // mc.registerHandler(0, 60, handleDawn);
     mc.registerHandler(68, TRIGGER_KICK, handleDeathMarch);
@@ -27,8 +28,18 @@ int main()
     mc.registerHandler(76, TRIGGER_FOOT_PEDAL, handleForcedLabourSongG);
     mc.registerHandler(76, TRIGGER_KICK, handleForcedLabourSongGKick);
     mc.registerHandler(77, TRIGGER_KICK, handleSpirograph);
-    mc.registerHandler(78, TRIGGER_FLOOR_TOM, handle00000000);
+    mc.registerHandler(78, TRIGGER_PAD, handlePrep00000000);
+    mc.registerHandler(78, TRIGGER_KICK, handle00000000);
     mc.registerHandler(78, TRIGGER_FOOT_PEDAL, handleFin);
+
+    mc.registerHandler(86, TRIGGER_KICK, handleStigma);
+    mc.registerHandler(94, TRIGGER_FOOT_PEDAL, handleManago);
+    mc.registerHandler(87, TRIGGER_SNARE_RIM, handleCradle);
+    mc.registerHandler(88, TRIGGER_KICK, handleCradleChorus);
+    mc.registerHandler(95, TRIGGER_FOOT_PEDAL, handleUnkown);
+    mc.registerHandler(91, TRIGGER_FLOOR_TOM, handleHollowOne);
+    mc.registerHandler(91, TRIGGER_KICK, handleHollow);
+
 
     mc.run();
     return 0;
